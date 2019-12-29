@@ -1,0 +1,315 @@
+#include<iostream>
+#include<vector>
+#include<time.h>
+#include<stdlib.h>
+using namespace std;
+int iNumber;
+int iCount = 0;
+void swap(int *a, int *b){
+    int temp;
+    temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+//01 冒泡排序
+void Bubble_sort(vector<int>source)
+{                                                          //source为产生的随机数列 temp为排序后的数列
+    vector<int>temp = source;
+    clock_t start, finish;
+    double totaltime;
+    
+    start = clock();                                       //开始计算冒泡排序时间
+    for (int iX = 0; iX < iNumber - 1; iX++){
+        for (int iJ = 0; iJ < iNumber - 1; iJ++){          //每两个数据进行比较并判断大小是否互换
+            if (temp[iJ] > temp[iJ + 1]) {
+                swap(temp[iJ], temp[iJ + 1]);
+                iCount++;
+            }
+        }
+    }
+    finish = clock();
+    totaltime = (double)(finish - start) / CLOCKS_PER_SEC;
+    cout << "冒泡排序所用时间：" << totaltime <<"  ";
+    cout << "冒泡排序交换次数：" << iCount<<endl;
+    iCount = 0;
+}
+//02 选择排序
+void Selection_sort(vector<int>source){                     //source为产生的随机数列 temp为排序后的数列
+    vector<int>temp = source;
+    int iTemp, iX, iJ;
+    clock_t start, finish;
+    double totaltime;
+    
+    start = clock();                                        //开始计算选择排序时间
+    for (iX = 0; iX < iNumber - 1; iX++){
+        iTemp = iX;
+        for (iJ = iX + 1; iJ < iNumber; iJ++){              //选择排序是每次选择出最小的数据
+            if (temp[iTemp] > temp[iJ])                     //放到待排序序列的起始位置
+                iTemp = iJ;
+        }
+        if (iX != iTemp) {
+            swap(temp[iTemp], temp[iX]);
+            iCount++;
+        }
+    }
+    finish = clock();
+    totaltime = (double)(finish - start) / CLOCKS_PER_SEC;
+    cout << "选择排序所用时间：" << totaltime << "  ";
+    cout << "选择排序交换次数：" << iCount<<endl;
+    iCount = 0;
+}
+
+//03 直接插入排序
+void Insert_sort(vector<int>source){                   //source为产生的随机数列 temp为排序后的数列
+    vector<int>temp = source;
+    int iTemp, iX, iJ;
+    clock_t start, finish;
+    double totaltime;
+    
+    start = clock();                                   //开始计算直接插入排序时间
+    for (iX = 1; iX < iNumber; iX++){                  //直接插入排序是先取出一个元素
+        if (temp[iX] < temp[iX - 1]){                  //再将它安排到合适的位置
+            iTemp = temp[iX];                          //然后后面的数据依次向后一个位置
+            for (iJ = iX - 1; iJ >= 0 && temp[iJ]>iTemp; iJ--){
+                temp[iJ + 1] = temp[iJ];
+            }
+            temp[iJ + 1] = iTemp;
+            iCount++;
+        }
+    }
+    finish = clock();
+    totaltime = (double)(finish - start) / CLOCKS_PER_SEC;
+    cout << "直接插入排序所用时间：" << totaltime << "  ";
+    cout << "直接插入排序交换次数：" << iCount<<endl;
+    iCount = 0;
+}
+
+//04 希尔排序
+void Shell_sort(vector<int>source){
+    vector<int>temp = source;
+    int iTemp, iX, iJ;
+    clock_t start, finish;
+    double totaltime;
+    
+    start = clock();                                   //开始计算希尔插入排序时间
+    for (int div = iNumber / 2; div >= 1; div /= 2)    //希尔排序是按一定增量进行分组
+    {                                                  //然后对每组使用直接插入排序
+        for (iX = div; iX<iNumber; iX++)               //随着增量不断减少，每组的元素增多
+        {                                              //当增量减为1时，排序完成
+            for (iJ = iX; iJ >= 0 && (iJ - div)>0 && (temp[iJ] < temp[iJ - div]); iJ -= div){
+                swap(temp[iJ], temp[iJ - div]);
+                iCount++;
+            }
+        }
+    }
+    finish = clock();
+    totaltime = (double)(finish - start) / CLOCKS_PER_SEC;
+    cout << "希尔排序所用时间：" << totaltime << "  ";
+    cout << "希尔排序交换次数：" << iCount<<endl;
+    iCount = 0;
+}
+
+//05 快速排序
+void Qsort(vector<int>source, int low, int high)
+{
+    if (low >= high)
+    {
+        return;
+    }
+    int first = low;
+    int last = high;
+    int key = source[first];                             //用第一个数据作为枢轴
+    
+    while (first < last)
+    {
+        while (first < last && source[last] >= key)
+        {
+            --last;
+        }
+        if (first < last){
+            source[first++] = source[last];              //将比第一个小的移到低端
+            iCount++;
+        }
+        while (first < last && source[first] <= key)
+        {
+            ++first;
+        }
+        
+        if (first < last){
+            source[last--] = source[first];              //将比第一个大的移到高端
+            iCount++;
+        }
+    }
+    source[first] = key;                                 //枢轴记录到位
+    Qsort(source, low, first - 1);
+    Qsort(source, first + 1, high);
+}
+void Quick_sort(vector<int>temp){
+    clock_t start, finish;
+    double totaltime;
+    
+    start = clock();                                     //开始计算快速排序时间
+    Qsort(temp, 0, iNumber - 1);
+    finish = clock();
+    totaltime = (double)(finish - start) / CLOCKS_PER_SEC;
+    cout << "快速排序所用时间：" << totaltime << "  " ;
+    cout << "快速排序交换次数：" << iCount<<endl;
+    iCount = 0;
+}
+
+//06堆排序
+void MinHeapify(int*arry, int size, int element)
+{
+    int lchild = element * 2 + 1, rchild = lchild + 1;          //左右子树
+    while (rchild<size)                                         //子树均在范围内
+    {
+        if (arry[element] <= arry[lchild] && arry[element] <= arry[rchild])
+            
+            //如果比左右子树都小，完成整理
+        {
+            return;
+        }
+        if (arry[lchild] <= arry[rchild])                       //如果左边最小
+        {
+            swap(arry[element], arry[lchild]);                  //把左面的提到上面
+            iCount++;
+            element = lchild;                                   //循环时整理子树
+        }
+        else
+        {
+            swap(arry[element], arry[rchild]);
+            iCount++;
+            element = rchild;
+        }
+        lchild = element * 2 + 1;
+        rchild = lchild + 1;                                    //重新计算子树位置
+    }
+    if (lchild<size&&arry[lchild]<arry[element])                //只有左子树且子树小于自己
+    {
+        swap(arry[lchild], arry[element]);
+        iCount++;
+    }
+    return;
+}
+void Heap_sort(vector<int>source){
+    clock_t start, finish;
+    double totaltime;
+    int size = iNumber;
+    int *temp = new int[iNumber];
+    for (int iX = 0; iX < iNumber; iX++){
+        temp[iX] = source[iX];
+    }
+    start = clock();                                        //开始计算堆排序时间
+    for (int iX = size - 1; iX >= 0; iX--)                  //从子树开始整理树
+    {
+        MinHeapify(temp, size, iX);
+    }
+    while (size>0)
+    {
+        swap(temp[size - 1], temp[0]);                      //将根（最小）与数组最末交换
+        iCount++;
+        size--;                                             //树大小减小
+        MinHeapify(temp, size, 0);                          //整理树
+    }
+    finish = clock();
+    totaltime = (double)(finish - start) / CLOCKS_PER_SEC;
+    cout << "堆排序所用时间：" << totaltime << "  ";
+    cout << "堆排序交换次数：" << iCount<<endl;
+    iCount = 0;
+}
+
+//07 归并排序
+void Merge(int* data, int a, int b, int length){
+    int right;
+    if (b + length - 1 >= iNumber - 1)
+        right = iNumber - b;
+    else
+        right = length;
+    int* temp = new int[length + right];
+    int iX = 0, iJ = 0;
+    while (iX <= length - 1 && iJ <= right - 1){
+        if (data[a + iX] <= data[b + iJ]){
+            temp[iX + iJ] = data[a + iX];
+            iX++;
+            iCount++;
+        }
+        else{
+            temp[iX + iJ] = data[b + iJ];
+            iJ++;
+            iCount++;
+        }
+    }
+    if (iJ == right){
+        memcpy(temp + iX + iJ, data + a + iX, (length - iX) * sizeof(int));
+    }
+    else if (iX == length){
+        memcpy(temp + iX + iJ, data + b + iJ, (right - iJ)*sizeof(int));
+    }
+    memcpy(data + a, temp, (right + length) * sizeof(int));
+    delete[] temp;
+}
+void mergesort(int *temp){
+    int iStep = 1;
+    while (iStep < iNumber){
+        for (int iX = 0; iX <= iNumber - iStep - 1; iX += 2 * iStep)
+            Merge(temp, iX, iX + iStep, iStep);
+        iStep *= 2;
+    }
+}
+void MERGE_sort(vector<int>source){
+    clock_t start, finish;
+    double totaltime;
+    int size = iNumber;
+    int *temp = new int[iNumber];
+    for (int iX = 0; iX < iNumber; iX++){
+        temp[iX] = source[iX];
+    }
+    start = clock();                                        //开始计算归并排序时间
+    mergesort(temp);
+    finish = clock();
+    totaltime = (double)(finish - start) / CLOCKS_PER_SEC;
+    cout << "归并排序所用时间：" << totaltime <<"  ";
+    cout << "归并排序交换次数：" << iCount<<endl;
+    iCount = 0;
+}
+
+
+
+#include<iostream>
+#include<string>
+
+#include<vector>
+using namespace std;
+int main(){
+    int iOrder;
+    cout << "请输入要产生的数据的个数：";
+    cin >> iNumber;
+    while (iNumber <= 1){
+        cout << "输入数字不合法，请重新输入：";
+        cin >> iNumber;
+    }
+    vector<int>temp;                             //得到随机数组
+    for (int iX = 0; iX < iNumber; iX++){
+        temp.push_back(rand());
+    }
+    
+    
+    Bubble_sort(temp);
+    
+    Selection_sort(temp);
+    
+    Insert_sort(temp);
+    
+    Shell_sort(temp);
+    
+    Quick_sort(temp);
+    
+    Heap_sort(temp);
+    
+    MERGE_sort(temp);
+    
+    
+}
+
+
